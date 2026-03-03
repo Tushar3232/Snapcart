@@ -1,10 +1,16 @@
+'use client'
+import Register from '@/components/register/Register';
 import Welcome from '@/components/welcome/Welcome';
-import React from 'react';
+import React, { useState } from 'react';
 
 const RegisterPage = () => {
+    const [stap, setStap] = useState(1)
     return (
         <div>
-            <Welcome></Welcome>
+            {
+                stap == 1 ? <Welcome nextStap={setStap}></Welcome> : <Register previousStep={setStap}></Register>
+            }
+
         </div>
     );
 };

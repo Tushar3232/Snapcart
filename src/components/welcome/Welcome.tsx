@@ -2,8 +2,11 @@
 import { motion, MotionConfig } from "framer-motion"
 import { ArrowRight, BikeIcon, ShoppingBasket } from "lucide-react";
 
+type propType={
+    nextStap: (s:number)=>void
+}
 
-const Welcome = () => {
+const Welcome = ({nextStap}:propType) => {
     return (
         <div className=' flex flex-col items-center justify-center min-h-screen text-center p-6 gap-3'>
             <motion.div
@@ -58,6 +61,7 @@ const Welcome = () => {
             animate={{opacity:1, scale:1 }}
             transition={{duration:0.6}}
             className=" inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-8 rounded-2xl shadow-md "
+            onClick={()=>nextStap(2)}
             >
                 Next <ArrowRight></ArrowRight> 
             </motion.button>
