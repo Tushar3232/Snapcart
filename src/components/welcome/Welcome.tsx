@@ -1,5 +1,5 @@
 "use client"
-import { motion, MotionConfig } from "framer-motion"
+import { motion} from "framer-motion"
 import { ArrowRight, BikeIcon, ShoppingBasket } from "lucide-react";
 
 type propType={

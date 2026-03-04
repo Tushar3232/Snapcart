@@ -1,42 +1,33 @@
+'use client'
 import axios from 'axios';
-import { ArrowLeft, EyeIcon, EyeOff, Leaf } from 'lucide-react';
+import { EyeIcon, EyeOff, Leaf } from 'lucide-react';
 import { motion } from 'motion/react';
+import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 
 import { useState } from 'react';
 import { FcGoogle } from "react-icons/fc";
 
-type propType = {
-    previousStep: (n: number) => void
-}
-
-const Register = ({ previousStep }: propType) => {
-    const [name, setName] = useState("");
+const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const router = useRouter()
 
-    const userData = { name, email, password }
+    const handleLogin = async(e:React.SyntheticEvent) => {
+        e.preventDefault();
+        try{
+            await signIn("credentials",{
+                email, password, 
+            })
 
-    const handleRegister = async (e: React.FormEvent) => {
-        e.preventDefault()
-
-        try {
-            const result = await axios.post("/api/auth/register", userData)
-            console.log(result.data)
-        } catch (error) {
+        }catch(error){
             console.log(error)
         }
-    }
 
+    }
     return (
         <div className=' flex flex-col items-center justify-center min-h-screen px-6 py-10 bg-white relative'>
-            {/* back button  */}
-            <div onClick={() => previousStep(1)} className=' absolute top-6 left-6 flex items-center gap-2 text-green-700 hover:text-green-800 transition-colors cursor-pointer'>
-                <ArrowLeft className=' w-5 h-5'></ArrowLeft>
-                <span className=' font-medium'>Back</span>
-            </div>
 
             <motion.h1
                 initial={{ y: -10, opacity: 0 }}
@@ -44,27 +35,18 @@ const Register = ({ previousStep }: propType) => {
                 transition={{ duration: 0.6 }}
                 className=' text-4xl font-extrabold text-green-700 mb-2'
             >
-                Create Account
+                Welcome back
             </motion.h1>
-            <p className=' text-gray-600 mb-8 flex items-center'>Join Snapcart today <Leaf className=' w-5 h-5 text-green-600'></Leaf> </p>
+            <p className=' text-gray-600 mb-8 flex items-center'>Login to Snapcart  <Leaf className=' w-5 h-5 text-green-600'></Leaf> </p>
 
 
             <motion.form
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 2 }}
                 transition={{ duration: 0.6 }}
-                onSubmit={handleRegister}
+                onSubmit={handleLogin}
                 className='flex flex-col w-full max-w-md gap-4'
             >
-
-                {/* Name Input */}
-                <input
-                    type="text"
-                    placeholder="Your Name"
-                    onChange={(e) => setName(e.target.value)}
-                    value={name}
-                    className='w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 transition'
-                />
 
                 {/* Email Input */}
                 <input
@@ -96,7 +78,7 @@ const Register = ({ previousStep }: propType) => {
                     type="submit"
                     className='w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors cursor-pointer'
                 >
-                    Register
+                    Login
                 </button>
 
                 {/* OR Divider */}
@@ -117,12 +99,12 @@ const Register = ({ previousStep }: propType) => {
 
                 {/* Sign In Link */}
                 <p className='text-center text-sm text-gray-600 mt-4'>
-                    Already have an account?{' '}
+                    If you have not account?{" "}
                     <span
-                        onClick={() => { router.push("/login") }}
+                        onClick={() => { router.push("/register")}}
                         className='text-green-600 font-medium hover:underline'
                     >
-                        Login
+                        Sign in
                     </span>
                 </p>
             </motion.form>
@@ -130,4 +112,4 @@ const Register = ({ previousStep }: propType) => {
     );
 };
 
-export default Register;
+export default Login;
