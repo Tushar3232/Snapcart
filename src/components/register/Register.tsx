@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { ArrowLeft, EyeIcon, EyeOff, Leaf } from 'lucide-react';
 import { motion } from 'motion/react';
+import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 
 import { useState } from 'react';
@@ -109,6 +110,7 @@ const Register = ({ previousStep }: propType) => {
                 {/* Continue with Google Button */}
                 <button
                     type="button"
+                    onClick={()=>signIn("google")}
                     className='w-full border border-gray-300 py-3 rounded-lg font-medium flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors cursor-pointer'
                 >
                     <FcGoogle />

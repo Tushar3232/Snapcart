@@ -2,7 +2,7 @@
 import axios from 'axios';
 import { EyeIcon, EyeOff, Leaf } from 'lucide-react';
 import { motion } from 'motion/react';
-import { signIn } from 'next-auth/react';
+import { signIn, useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 
 import { useState } from 'react';
@@ -13,6 +13,8 @@ const Login = () => {
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const router = useRouter()
+    const session= useSession()
+    console.log("session user data",session)
 
     const handleLogin = async(e:React.SyntheticEvent) => {
         e.preventDefault();
@@ -91,6 +93,7 @@ const Login = () => {
                 {/* Continue with Google Button */}
                 <button
                     type="button"
+                    onClick={()=>signIn("google")}
                     className='w-full border border-gray-300 py-3 rounded-lg font-medium flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors cursor-pointer'
                 >
                     <FcGoogle />

@@ -4,9 +4,10 @@ interface IUser{
     _id?: mongoose.Types.ObjectId,
     name: string,
     email: string,
-    password: string,
+    password?: string,
     mobile?: string,
     role: "user" | "deliberyBoy" | "admin"
+    image?: string
 }
 
 const userSchema= new mongoose.Schema<IUser>({
@@ -21,7 +22,7 @@ const userSchema= new mongoose.Schema<IUser>({
     },
     password:{
         type:String,
-        required: true,
+        required: false,
 
     },
     mobile:{
@@ -32,9 +33,12 @@ const userSchema= new mongoose.Schema<IUser>({
         type: String,
         enum: ["user","deliberyBoy","admin"],
         default: "user"
+    },
+    image:{
+        type: String,
     }
 
 },{timestamps:true})
 
-const User = mongoose.model.User || mongoose.model("User", userSchema)
+const User = mongoose.models.User || mongoose.model("User", userSchema)
 export default User
