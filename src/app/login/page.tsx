@@ -1,5 +1,4 @@
 'use client'
-import axios from 'axios';
 import { EyeIcon, EyeOff, Leaf } from 'lucide-react';
 import { motion } from 'motion/react';
 import { signIn, useSession } from 'next-auth/react';
@@ -13,17 +12,21 @@ const Login = () => {
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const router = useRouter()
-    const session= useSession()
-    console.log("session user data",session)
+    const session = useSession()
+    console.log("session user data", session)
 
-    const handleLogin = async(e:React.SyntheticEvent) => {
+    const handleLogin = async (e: React.SyntheticEvent) => {
         e.preventDefault();
-        try{
-            await signIn("credentials",{
-                email, password, 
+        try {
+            await signIn("credentials", {
+                email, password, redirect: false,
             })
 
-        }catch(error){
+            if (result?.ok) {
+                router.push("/")
+            }
+
+        } catch (error) {
             console.log(error)
         }
 
@@ -44,7 +47,7 @@ const Login = () => {
 
             <motion.form
                 initial={{ opacity: 0 }}
-                animate={{ opacity: 2 }}
+                animate={{ opacity: 1 }}
                 transition={{ duration: 0.6 }}
                 onSubmit={handleLogin}
                 className='flex flex-col w-full max-w-md gap-4'
@@ -90,27 +93,33 @@ const Login = () => {
                     <hr className='flex-1 border-gray-300' />
                 </div>
 
-                {/* Continue with Google Button */}
-                <button
-                    type="button"
-                    onClick={()=>signIn("google")}
-                    className='w-full border border-gray-300 py-3 rounded-lg font-medium flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors cursor-pointer'
-                >
-                    <FcGoogle />
-                    Continue with Google
-                </button>
 
-                {/* Sign In Link */}
-                <p className='text-center text-sm text-gray-600 mt-4'>
-                    If you have not account?{" "}
-                    <span
-                        onClick={() => { router.push("/register")}}
-                        className='text-green-600 font-medium hover:underline'
-                    >
-                        Sign in
-                    </span>
-                </p>
             </motion.form>
+            {/* Google Login Section */}
+<div className="w-full max-w-md mt-4 flex flex-col items-center">
+
+    {/* Continue with Google Button */}
+    <button
+        type="button"
+        onClick={() => signIn("google")}
+        className="w-full border border-gray-300 py-3 rounded-lg font-medium flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors cursor-pointer"
+    >
+        <FcGoogle />
+        Continue with Google
+    </button>
+
+    {/* Register Link */}
+    <p className="text-center text-sm text-gray-600 mt-4">
+        Don&apos;t have an account?{" "}
+        <span
+            onClick={() => router.push("/register")}
+            className="text-green-600 font-medium hover:underline cursor-pointer"
+        >
+            Sign up
+        </span>
+    </p>
+
+</div>
         </div>
     );
 };
