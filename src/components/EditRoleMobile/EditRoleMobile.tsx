@@ -1,7 +1,7 @@
 
 const EditRoleMobile = () => {
     return (
-        <div>
+        <div className=" text-4xl font-bold">
             Hi bro...
         </div>
     );
