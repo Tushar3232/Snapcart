@@ -19,12 +19,9 @@ const Login = () => {
         e.preventDefault();
         try {
             await signIn("credentials", {
-                email, password, redirect: false,
+                email, password,
             })
 
-            if (result?.ok) {
-                router.push("/")
-            }
 
         } catch (error) {
             console.log(error)
@@ -96,30 +93,30 @@ const Login = () => {
 
             </motion.form>
             {/* Google Login Section */}
-<div className="w-full max-w-md mt-4 flex flex-col items-center">
+            <div className="w-full max-w-md mt-4 flex flex-col items-center">
 
-    {/* Continue with Google Button */}
-    <button
-        type="button"
-        onClick={() => signIn("google")}
-        className="w-full border border-gray-300 py-3 rounded-lg font-medium flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors cursor-pointer"
-    >
-        <FcGoogle />
-        Continue with Google
-    </button>
+                {/* Continue with Google Button */}
+                <button
+                    type="button"
+                    onClick={() => signIn("google")}
+                    className="w-full border border-gray-300 py-3 rounded-lg font-medium flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors cursor-pointer"
+                >
+                    <FcGoogle />
+                    Continue with Google
+                </button>
 
-    {/* Register Link */}
-    <p className="text-center text-sm text-gray-600 mt-4">
-        Don&apos;t have an account?{" "}
-        <span
-            onClick={() => router.push("/register")}
-            className="text-green-600 font-medium hover:underline cursor-pointer"
-        >
-            Sign up
-        </span>
-    </p>
+                {/* Register Link */}
+                <p className="text-center text-sm text-gray-600 mt-4">
+                    Don&apos;t have an account?{" "}
+                    <span
+                        onClick={() => router.push("/register")}
+                        className="text-green-600 font-medium hover:underline cursor-pointer"
+                    >
+                        Sign up
+                    </span>
+                </p>
 
-</div>
+            </div>
         </div>
     );
 };
