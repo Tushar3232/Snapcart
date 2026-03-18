@@ -51,25 +51,26 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     ],
     callbacks: {
         // token a user data add korbo google provider
-        async signIn({user, account}){
-            if(account?.provider == "google"){
+        async signIn({ user, account }) {
+            if (account?.provider == "google") {
                 await connectDb()
-                let dbUser = await User.findOne({email:user.email})
-                if(!dbUser){
-                    dbUser= await User.create({
+                let dbUser = await User.findOne({ email: user.email })
+                if (!dbUser) {
+                    dbUser = await User.create({
                         name: user.name,
                         email: user.email,
                         image: user.image
 
                     })
 
-                    user.id = dbUser._id.toString()
-                    user.role = dbUser.role
+
                 }
+                user.id = dbUser._id.toString()
+                user.role = dbUser.role
             }
             return true
         },
-        
+
         jwt({ token, user }) {
             if (user) {
                 token.id = user.id
