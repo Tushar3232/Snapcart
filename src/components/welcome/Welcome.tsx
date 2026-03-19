@@ -1,12 +1,12 @@
 "use client"
-import { motion} from "framer-motion"
+import { motion } from "framer-motion"
 import { ArrowRight, BikeIcon, ShoppingBasket } from "lucide-react";
 
-type propType={
-    nextStap: (s:number)=>void
+type propType = {
+    nextStap: (s: number) => void
 }
 
-const Welcome = ({nextStap}:propType) => {
+const Welcome = ({ nextStap }: propType) => {
     return (
         <div className=' flex flex-col items-center justify-center min-h-screen text-center p-6 gap-3'>
             <motion.div
@@ -43,7 +43,7 @@ const Welcome = ({nextStap}:propType) => {
                     transition={{ duration: 1, delay: 0.2 }}
                 >
                     <ShoppingBasket className=" w-24 h-24 md:w-32 md:h-32 text-green-600" />
-                    
+
                 </motion.div>
 
                 <motion.div
@@ -51,19 +51,19 @@ const Welcome = ({nextStap}:propType) => {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 1, delay: 0.4 }}
                 >
-            
+
                     <BikeIcon className=" w-24 h-24 md:w-32 md:32 text-orange-500"></BikeIcon>
                 </motion.div>
             </div>
 
             <motion.button
-            initial={{opacity:0, scale:0}}
-            animate={{opacity:1, scale:1 }}
-            transition={{duration:0.6}}
-            className=" inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-8 rounded-2xl shadow-md "
-            onClick={()=>nextStap(2)}
+                initial={{ opacity: 0, scale: 0 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.6 }}
+                className=" inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-8 rounded-2xl shadow-md "
+                onClick={() => nextStap(2)}
             >
-                Next <ArrowRight></ArrowRight> 
+                Next <ArrowRight></ArrowRight>
             </motion.button>
         </div>
     );

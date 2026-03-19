@@ -9,9 +9,9 @@ const proxy = async (req: NextRequest) => {
     const publicRoutes = ["/login", "/register", "/favicon.ico"]
    
     if (publicRoutes.some((path) => pathname.startsWith(path))) {
-        if (token && pathname === "/login" || "/register") {
-            return NextResponse.redirect(new URL("/dashboard", req.url));
-        }
+        // if (token && pathname === "/login" || "/register") {
+        //     return NextResponse.redirect(new URL("/dashboard", req.url));
+        // }
         return NextResponse.next()
     }
 
