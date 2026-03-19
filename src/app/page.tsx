@@ -5,6 +5,7 @@ import User from './models/user.model';
 
 import EditRoleMobile from '@/components/EditRoleMobile/EditRoleMobile';
 import { redirect } from 'next/navigation';
+import Nav from '@/components/navber/Nav';
 
 const Home = async () => {
   await connectDb()
@@ -20,9 +21,9 @@ const Home = async () => {
     return <EditRoleMobile></EditRoleMobile>
   }
   return (
-    <div>
-      
-    </div>
+    <>
+      <Nav user={user}></Nav>
+    </>
   );
 };
 
