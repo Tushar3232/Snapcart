@@ -4,7 +4,7 @@ import { AnimatePresence } from 'motion/react';
 import React, { useEffect, useState } from 'react';
 import { motion } from "framer-motion"
 import Image from 'next/image';
-import { s } from 'motion/react-client';
+
 
 const HeroSection = () => {
     const slides = [
