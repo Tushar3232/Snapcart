@@ -22,6 +22,19 @@ const proxy = async (req: NextRequest) => {
         loginUrl.searchParams.set("callbackUrl", req.url)
         return NextResponse.redirect(loginUrl)
     }
+
+    // Role bes Eaxcess
+    const role = token.role 
+    if(pathname.startsWith("/user") && role !=="user"){
+        return NextResponse.redirect(new URL("/unauthorized",req.url))
+    }
+    if(pathname.startsWith("/delivery") && role !=="deliveryBoy"){
+        return NextResponse.redirect(new URL("/unauthorized",req.url))
+    }
+    if(pathname.startsWith("/admin") && role !=="admin"){
+        return NextResponse.redirect(new URL("/unauthorized",req.url))
+    }
+
     return NextResponse.next()
 };
 

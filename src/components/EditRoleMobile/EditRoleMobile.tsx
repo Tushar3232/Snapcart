@@ -3,12 +3,13 @@ import axios from "axios";
 
 import { motion } from "framer-motion"
 import { ArrowRight, BikeIcon, User, UserCog } from "lucide-react";
+import { useSession } from "next-auth/react";
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 const EditRoleMobile = () => {
-    const router = useRouter
+    const router = useRouter()
     const [roles, setRoles] = useState([
         { id: "admin", label: "Admin", icon: UserCog },
         { id: "user", label: "User", icon: User },
@@ -16,12 +17,14 @@ const EditRoleMobile = () => {
     ])
     const [selectedRole, setSelectedRole] = useState("")
     const [mobile, setMobile] = useState("")
+    const {update}=useSession()
     const handleRole= async ()=>{
         try{
             const result = await axios.post("/api/user/edit-role-mobile",{
                 role: selectedRole,
                 mobile
             })
+            await update({role:selectedRole})
            router.push("/")
             console.log(result.data)
 
@@ -80,7 +83,7 @@ const EditRoleMobile = () => {
             <button
                 onClick={handleRole}
                 disabled={!mobile || !selectedRole}
-                className={`inline-flex items-center gap-2 font-semibold py-3 px-8 rounded-2xl shadow-md transition-all duration-200 ${selectedRole && mobile.length === 10 ? " bg-green-600 hover:bg-green-700 text-white"
+                className={`inline-flex items-center gap-2 font-semibold py-3 px-8 rounded-2xl shadow-md transition-all duration-200 ${selectedRole && mobile.length >= 10 ? " bg-green-600 hover:bg-green-700 text-white"
                         :
                         " bg-gray-300 text-gray-500 cursor-not-allowed"
                     }`}>
