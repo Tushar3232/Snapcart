@@ -1,5 +1,5 @@
 "use client"
-import { LogOutIcon, Package, Search, ShoppingCartIcon, User } from 'lucide-react';
+import { LogOutIcon, MenuIcon, Package, Search, ShoppingCartIcon, User } from 'lucide-react';
 import mongoose from 'mongoose';
 import { AnimatePresence } from 'motion/react';
 import Image from 'next/image';
@@ -7,6 +7,7 @@ import Link from 'next/link';
 import React, { useState } from 'react';
 import { motion } from "framer-motion"
 import { signOut } from 'next-auth/react';
+import { createPortal } from 'react-dom';
 interface IUser {
     _id?: mongoose.Types.ObjectId,
     name: string,
@@ -19,7 +20,70 @@ interface IUser {
 const Nav = ({ user }: { user: IUser }) => {
     const [open, setOpen] = useState(false)
     const [searchBarOpen, setSearchBarOpen] = useState(false)
+    const [menuOpen, SetMenuOpen] = useState(false)
     console.log(user)
+
+    const sideBar = menuOpen ? createPortal(
+        <AnimatePresence>
+            <motion.div
+                initial={{ x: -100, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                exit={{ x: 100, opacity: 0 }}
+                transition={{ type: "spring", stiffness: 100, damping: 14 }}
+                className=' fixed top-0 left-0 h-full w-[75%] sm:w-[60%] z-9999 bg-linear-to-b from-green-800/90 via-green-700/80 to-green-900/90
+             backdrop-blur-xl border-r border-green-400/20 
+              shadow-[0_0_50px_-10px_rgba(0,255,100,0.3)] flex flex-col p-6 text-white'
+            >
+                <div className=' flex justify-between items-center mb-2'>
+                    <h1 className=' font-extrabold text-2xl tracking-wide text-white/90'>Admin Panel</h1>
+                    <button onClick={() => SetMenuOpen(false)}
+                        className=' text-white/80 hover:text-red-400 text-2xl font-bold transition cursor-pointer'>
+                        X
+                    </button>
+                </div>
+                <div className=' flex flex-col h-full'>
+                    {/* profile */}
+                    <div className=' relative w-12 h-12 rounded-full overflow-hidden border-2 border-green-400/60 shadow-lg'>
+                        {
+                            user?.image
+                                ?
+                                <Image src={user?.image}
+                                    alt="User Profile"
+                                    fill
+                                    className="rounded-full object-cover"
+                                />
+                                :
+                                <User />
+                        }
+                    </div>
+                    <div>
+                        <h2> {user?.name} </h2>
+                        <p> {user.role} </p>
+                    </div>
+                    <div className=' '>
+                        <div className=' flex flex-col gap-3 font-medium mt-6'>
+                            <Link href={""} className=' flex items-center gap-3 p-3 rounded-lg bg-white/10 hover:bg-white/20 hover:pl-4 transition-all'>
+                                Add Grocery</Link>
+                            <Link href={""} className=' flex items-center gap-3 p-3 rounded-lg bg-white/10 hover:bg-white/20 hover:pl-4 transition-all'>
+                                View Grocery</Link>
+                            <Link href={""} className=' flex items-center gap-3 p-3 rounded-lg bg-white/10 hover:bg-white/20 hover:pl-4 transition-all'>
+                                Manage Orders</Link>
+                        </div>
+                        
+                    </div>
+                    <div></div>
+                        <div
+                        onClick={async()=>await signOut({callbackUrl:"/login"})}
+                        className='flex items-center justify-center gap-3 text-red-300 font-semibold mt-auto hover:bg-red-500/20 p-3 rounded-lg transition-all'>
+                            <LogOutIcon />
+                            Log Out
+                        </div>
+
+                </div>
+            </motion.div>
+        </AnimatePresence>,
+        document.body
+    ) : null
     return (
         <div className=' w-[95%] fixed top-4 left-1/2 -translate-x-1/2 bg-linear-to-r from-green-500 to-green-700 rounded-2xl shadow-lg shadow-black/30 flex justify-between items-center h-20 px-4 md:px-8 z-50'>
             <Link href={"/"}
@@ -60,6 +124,24 @@ const Nav = ({ user }: { user: IUser }) => {
                             <ShoppingCartIcon className=' text-green-600 w-6 h-6' />
                             <span className=' absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full font-semibold shadow'>0</span>
                         </Link>
+                    </>
+                }
+                {/* admin nav manu  */}
+                {
+                    user.role == "admin" && <>
+                        <div className=' hidden md:flex items-center gap-4'>
+                            <Link href={""} className=' flex items-center gap-2 bg-white text-green-700 font-semibold px-4 py-2 rounded-full hover:bg-green-100 transition-all'>
+                                Add Grocery</Link>
+                            <Link href={""} className=' flex items-center gap-2 bg-white text-green-700 font-semibold px-4 py-2 rounded-full hover:bg-green-100 transition-all'>
+                                View Grocery</Link>
+                            <Link href={""} className=' flex items-center gap-2 bg-white text-green-700 font-semibold px-4 py-2 rounded-full hover:bg-green-100 transition-all'>
+                                Manage Orders</Link>
+                        </div>
+                        <div
+                            onClick={() => SetMenuOpen((prev) => !prev)}
+                            className=' md:hidden bg-white rounded-full w-10 h-10 flex items-center justify-center shadow-md'>
+                            <MenuIcon className=' text-green-600 w-6 h-6' />
+                        </div>
                     </>
                 }
 
@@ -107,13 +189,15 @@ const Nav = ({ user }: { user: IUser }) => {
                                         <div className=' text-xs text-gray-500 capitalize'> {user.role} </div>
                                     </div>
                                 </div>
-                                <Link href={""}
-                                    onClick={() => setOpen(false)}
-                                    className=' flex items-center gap-3 py-3 hover:bg-green-50 rounded-lg text-gray-700 font-medium'
-                                >
-                                    <Package className=' w-5 h-5 text-green-700' />
-                                    My Orders
-                                </Link>
+                                {
+                                    user.role == "user" && <Link href={""}
+                                        onClick={() => setOpen(false)}
+                                        className=' flex items-center gap-3 py-3 hover:bg-green-50 rounded-lg text-gray-700 font-medium'
+                                    >
+                                        <Package className=' w-5 h-5 text-green-700' />
+                                        My Orders
+                                    </Link>
+                                }
                                 <button
                                     onClick={() => {
                                         setOpen(false)
@@ -152,6 +236,11 @@ const Nav = ({ user }: { user: IUser }) => {
                             </motion.div>
                         }
                     </AnimatePresence>
+                    {/* sidebar  */}
+                    {
+                        sideBar
+                    }
+
 
                 </div>
             </div>
