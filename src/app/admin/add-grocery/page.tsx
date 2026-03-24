@@ -1,9 +1,10 @@
 "use client"
-import { ArrowLeft, PlusCircle } from 'lucide-react';
+import { ArrowLeft, PlusCircle, Upload } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from "framer-motion"
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, SyntheticEvent, useState } from 'react';
 import Image from 'next/image';
+import axios from 'axios';
 
 const categories = [
     "Dairy & Eggs",
@@ -34,6 +35,26 @@ const AddGrocery = () => {
         setBackendImage(file)
         setPreview(URL.createObjectURL(file))
     }
+
+    const handleSubmit = async (e:SyntheticEvent)=>{
+        e.preventDefault()
+        try{
+            const formData=new FormData()
+            formData.append("name", name)
+            formData.append("category",category)
+            formData.append("unit",unit)
+            formData.append("price",price)
+            if(backendImage){
+                formData.append("image",backendImage)
+            }
+
+            const result= await axios.post("/api/admin/add-grocery", formData)
+            console.log(result.data)
+        }catch(error){
+            console.log(error)
+        }
+
+    }
     return (
         <div className=' min-h-screen flex items-center justify-center bg-linear-to-br from-green-50 to-white py-16 px-4 relative'>
             <Link href={"/"} className=' absolute top-6 left-6 flex items-center gap-2 text-green-700 font-semibold bg-white px-4 py-2 rounded-full shadow-md hover:bg-green-100 hover:shadow-lg transition-all'>
@@ -56,7 +77,7 @@ const AddGrocery = () => {
                     <p>Fill out the details below to add a new grocery item.</p>
                 </div>
                 {/* form  */}
-                <form className=' flex flex-col gap-6 w-full'>
+                <form onSubmit={handleSubmit} className=' flex flex-col gap-6 w-full'>
                     {/* Name */}
                     <div>
                         <label htmlFor="name" className=' block text-gray-700 font-medium mb-1'>Grocery Name</label>
@@ -126,22 +147,31 @@ const AddGrocery = () => {
                     {/* image  */}
                     <div>
                         <label htmlFor="image"
-                         className=' cursor-pointer flex items-center justify-center gap-2 bg-green-50 text-green-700 font-semibold border border-green-200 rounded-xl px-6 hover:bg-green-100 transition-all w-full sm:w-auto'
-                         >Upload image</label>
+                         className=' cursor-pointer flex items-center justify-center gap-2 bg-green-50 text-green-700 font-semibold border border-green-200 rounded-xl px-6 hover:bg-green-100 transition-all w-full h-25 sm:w-auto'
+                         > <Upload/> Upload image</label>
                         <div className=' flex flex-col sm:flex-row items-center gap-5'>
 
                             <input
                                 type="file"
                                 hidden
                                 accept='image/*'
-
+                                id="image"
                                 onChange={handleImageChange}
 
                             />
                             {preview && <Image src={preview} width={100} height={100} alt='image' />}
                         </div>
 
+
                     </div>
+
+                    <motion.button 
+                    whileHover={{scale:1.06}}
+                    whileTap={{scale:0.9}}
+                    className=' mt-4 w-full bg-linear-to-r from-green-500 to-green-700 text-white font-semibold py-3 rounded-xl shadow-lg hover:shadow-xl disabled:opacity-60 transition-all flex items-center justify-center gap-2'
+                    >
+                        Add Grocery
+                    </motion.button>
                 </form>
             </motion.div>
         </div>
