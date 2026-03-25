@@ -1,10 +1,17 @@
 import React from 'react';
+import HeroSection from '../hero/HeroSection';
+import CategorySlider from '../category/CategorySlider';
+
+
+
 
 const UserDashboard = () => {
     return (
-        <div>
-            User Dashboard 
-        </div>
+        <>
+            <HeroSection/>
+            <CategorySlider/>
+          
+        </>
     );
 };
 
