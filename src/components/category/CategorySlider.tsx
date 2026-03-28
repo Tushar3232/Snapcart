@@ -1,6 +1,7 @@
 'use client'
 import { BabyIcon, ChevronLeft, ChevronRight, CoffeeIcon, CookieIcon, HeartIcon, HomeIcon, LeafIcon, MilkIcon, PackageIcon, WheatIcon } from "lucide-react";
 import { motion } from "motion/react"
+import { useRef } from "react";
 
 const CategorySlider = () => {
     const categories = [
@@ -14,6 +15,14 @@ const CategorySlider = () => {
         { id: 8, name: "Instant & Packaged Food", icon: PackageIcon, color: "bg-purple-100" },
         { id: 9, name: "Baby & Pet Care", icon: BabyIcon, color: "bg-cyan-100" },
     ]
+
+    const scrollRef= useRef<HTMLDivElement>(null)
+    const scroll = (direction:"left" | "right")=>{
+        if(!scrollRef.current)return
+        const scrollAmount=direction=="left"?-300:300
+        scrollRef.current.scrollBy({left:scrollAmount, behavior:"smooth"})
+    }
+
     return (
         <div>
             <motion.div
@@ -26,10 +35,11 @@ const CategorySlider = () => {
             >
 
                 <h2 className='text-2xl md:text-3xl font-bold text-green-700 mb-6 text-center'>  Shop by category</h2>
-                <button className=" absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg hover:bg-green-100 rounded-full w-10 h-10 flex items-center justify-center transition-all">
+                <button onClick={()=>scroll("left")} className=" absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg hover:bg-green-100 rounded-full w-10 h-10 flex items-center justify-center transition-all">
                     <ChevronLeft />
                 </button>
-                <div className=" flex gap-6 overflow-x-auto px-10 pb-4 scrollbar-hide scroll-smooth">
+                <div ref={scrollRef}
+                className=" flex gap-6 overflow-x-auto px-10 pb-4 scrollbar-hide scroll-smooth">
                     {
                         categories.map((cat) => {
                             const Icon = cat.icon
@@ -46,7 +56,7 @@ const CategorySlider = () => {
                         })
                     }
                 </div>
-                <button className=" absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg hover:bg-green-100 rounded-full w-10 h-10 flex items-center justify-center transition-all">
+                <button onClick={()=>scroll("right")} className=" absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white shadow-lg hover:bg-green-100 rounded-full w-10 h-10 flex items-center justify-center transition-all">
                     <ChevronRight />
                 </button>
             </motion.div>
