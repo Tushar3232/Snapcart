@@ -3,11 +3,14 @@ import { createSlice } from "@reduxjs/toolkit";
 
 
 interface IUserSlice{
-    userData: IUser | null
+    userData: IUser | null,
+    ayush: null
 }
 
 const initialState: IUserSlice={
-    userData:null
+    userData:null,
+    ayush: null
+
 }
 const userSlise= createSlice({
     name:"user",
