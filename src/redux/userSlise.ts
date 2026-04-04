@@ -4,12 +4,12 @@ import { createSlice } from "@reduxjs/toolkit";
 
 interface IUserSlice{
     userData: IUser | null,
-    ayush: null
+    
 }
 
 const initialState: IUserSlice={
     userData:null,
-    ayush: null
+   
 
 }
 const userSlise= createSlice({
