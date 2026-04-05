@@ -1,9 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit'
 import userSlice from "./userSlise"
+import cartSlice from "./cartSlise"
 
 export const store = configureStore({
   reducer: {
-    user: userSlice
+    user: userSlice,
+    cart: cartSlice
   },
 })
 
