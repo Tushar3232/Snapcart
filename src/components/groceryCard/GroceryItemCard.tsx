@@ -2,8 +2,12 @@
 import { IGrocery } from '@/app/models/grocery.model';
 import Image from 'next/image';
 import { motion } from "motion/react";
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '@/redux/store';
+import { addToCart } from '@/redux/cartSlise';
 
 const GroceryItemCard = ({ item }: { item: IGrocery }) => {
+    const dispatch=useDispatch<AppDispatch>()
     return (
         <motion.div
             initial={{ opacity: 0, y: 50 }}
@@ -50,6 +54,7 @@ const GroceryItemCard = ({ item }: { item: IGrocery }) => {
 
                     {/* Add to Cart Button */}
                     <button
+                    onClick={()=>dispatch(addToCart({...item,quantity:1}))}
                         className="mt-6 bg-green-600 hover:bg-green-700 active:bg-green-800 
                                text-white font-semibold py-3.5 rounded-2xl transition-all 
                                duration-200 flex items-center justify-center gap-2 shadow-sm"
