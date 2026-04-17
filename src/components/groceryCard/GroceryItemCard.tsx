@@ -1,13 +1,28 @@
 'use client';
-import { IGrocery } from '@/app/models/grocery.model';
+
 import Image from 'next/image';
 import { motion } from "motion/react";
-import { useDispatch } from 'react-redux';
-import { AppDispatch } from '@/redux/store';
-import { addToCart } from '@/redux/cartSlise';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '@/redux/store';
+import { addToCart, decreaseQuantity, increaseQuantity } from '@/redux/cartSlise';
+import { Minus, Plus } from 'lucide-react';
+import mongoose from 'mongoose';
+
+interface IGrocery {
+    _id: mongoose.Types.ObjectId,
+    name: string,
+    category: string,
+    price: string,
+    unit: string,
+    image: string,
+    createdAt?: Date,
+    updatedAt?: Date,
+}
 
 const GroceryItemCard = ({ item }: { item: IGrocery }) => {
-    const dispatch=useDispatch<AppDispatch>()
+    const dispatch = useDispatch<AppDispatch>()
+    const { cartData } = useSelector((state: RootState) => state.cart)
+    const cartItem = cartData.find(i => i._id == item._id)
     return (
         <motion.div
             initial={{ opacity: 0, y: 50 }}
@@ -53,17 +68,25 @@ const GroceryItemCard = ({ item }: { item: IGrocery }) => {
                     </div>
 
                     {/* Add to Cart Button */}
-                    <button
-                    onClick={()=>dispatch(addToCart({...item,quantity:1}))}
-                        className="mt-6 bg-green-600 hover:bg-green-700 active:bg-green-800 
+                    {!cartItem ?
+                        <button
+                            onClick={() => dispatch(addToCart({ ...item, quantity: 1 }))}
+                            className="mt-6 bg-green-600 hover:bg-green-700 active:bg-green-800 
                                text-white font-semibold py-3.5 rounded-2xl transition-all 
                                duration-200 flex items-center justify-center gap-2 shadow-sm"
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                        </svg>
-                        Add to Cart
-                    </button>
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                            </svg>
+                            Add to Cart
+                        </button>
+                        :
+                        <div className='mt-6 flex bg-gray-100 p-1 justify-center items-center rounded-2xl gap-3'>
+                            <Minus onClick={()=>dispatch(decreaseQuantity(item._id))} className=' hover:bg-green-200 cursor-pointer rounded-full'/>
+                            <span> {cartItem.quantity} </span>
+                            <Plus onClick={()=>dispatch(increaseQuantity(item._id))} className='hover:bg-green-200 cursor-pointer rounded-full'/>
+                        </div>
+                    }
                 </div>
             </div>
         </motion.div>
