@@ -1,9 +1,14 @@
 'use client'
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, ShoppingBasket } from 'lucide-react';
 import Link from 'next/link';
-import { motion } from "motion/react"
+import { AnimatePresence, motion, number } from "motion/react"
+import { useSelector } from 'react-redux';
+import { RootState } from '@/redux/store';
+import { div } from 'motion/react-client';
+import Image from 'next/image';
 
 const CartPage = () => {
+    const { cartData } = useSelector((state: RootState) => state.cart)
     return (
         <div className=' w-[95%] sm:w-[80%] mx-auto mt-18 mb-24 relative'>
 
@@ -21,6 +26,68 @@ const CartPage = () => {
             >
                 🛒 Your Shopping Cart
             </motion.h2>
+
+            {
+                cartData.length == 0 ?
+                    (
+                        <motion.div
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.3 }}
+                            className=' text-center py-20 bg-white rounded-2xl shadow-md'
+                        >
+                            <ShoppingBasket className='w-16 h-16 text-gray-400 mx-auto mb-4' />
+
+                            <p className=' text-gray-600 text-lg mb-6'>
+                                Your Cart is empty. Add some groceries to continue shopping
+                            </p>
+
+                            <Link href={"/"}
+                                className=' bg-green-600 text-white px-6 py-3 rounded-full hover:bg-green-700 transition-all inline-block font-medium'
+                            >
+                                Continue Shopping
+                            </Link>
+                        </motion.div>
+                    )
+
+                    :
+
+                    (
+                        <div className=' grid-cols-1 lg:grid-cols-3 gap-8'>
+                            <div>
+                                <AnimatePresence>
+                                    {
+                                        cartData.map((item, index)=>(
+                                            <motion.div
+                                            key={index}
+                                            initial={{opacity:0, y:30}}
+                                            animate={{opacity:1, y:0}}
+                                            exit={{opacity:0, y:-20}}
+                                            className='flex flex-col sm:flex-row items-center bg-white rounded-2xl shadow-md p-5 hover:shadow-xl transition-all duration-300 border-gray-100'
+                                            >
+                                                <div className=' relative w-28 h-28 sm:w-24 sm:h-24 md:w-28 md:h-28 flex-shrink-0 rounded-xl overflow-hidden bg-gray-50'>
+                                                    <Image
+                                                     src={item.image}
+                                                    alt={item.name}
+                                                    fill
+                                                    className=' object-contain p-3 transition-transform duration-300 hover:scale-105'
+                                                    />
+                                                </div>
+                                                <div className=' mt-4 sm:mt-0 sm:ml-4 flex-1 text-center sm:text-left'>
+                                                    <h3 className='text-base sm:text-lg font-semibold text-gray-800 line-clamp-1'> {item.name} </h3>
+                                                    <p className=' text-xs sm:text-sm text-gray-500'> {item.unit} </p>
+                                                    <p className=' text-green-700 font-bold mt-1 text-sm sm:text-base'> {Number(item.price)* item.quantity} Tk </p>
+                                                </div>
+
+                                            </motion.div>
+                                        ))
+                                    }
+                                </AnimatePresence>
+                            </div>
+                        </div>
+
+                    )
+            }
 
 
         </div>
