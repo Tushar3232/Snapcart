@@ -8,7 +8,7 @@ import Image from 'next/image';
 import { decreaseQuantity, increaseQuantity, removeFromCart } from '@/redux/cartSlise';
 
 const CartPage = () => {
-    const { cartData } = useSelector((state: RootState) => state.cart)
+    const { cartData, subTotal, finalTotal, deliveryFee } = useSelector((state: RootState) => state.cart)
     const dispatch = useDispatch<AppDispatch>()
     return (
         <div className=' w-[95%] sm:w-[80%] mx-auto mt-16 mb-24 relative'>
@@ -58,7 +58,7 @@ const CartPage = () => {
                             <div className=' lg:col-span-2 space-y-5'>
                                 <AnimatePresence>
                                     {
-                                        cartData.map((item ) => (
+                                        cartData.map((item) => (
                                             <motion.div
                                                 key={item._id.toString()}
                                                 initial={{ opacity: 0, y: 30 }}
@@ -92,9 +92,9 @@ const CartPage = () => {
 
                                                 </div>
 
-                                                <button 
-                                                onClick={()=>dispatch(removeFromCart(item._id))}
-                                                className=' ml-2.5 hover:text-red-600 '
+                                                <button
+                                                    onClick={() => dispatch(removeFromCart(item._id))}
+                                                    className=' ml-2.5 hover:text-red-600 '
                                                 >
                                                     <Trash2 />
                                                 </button>
@@ -104,6 +104,41 @@ const CartPage = () => {
                                     }
                                 </AnimatePresence>
                             </div>
+
+                            {/* Order Summary sidebar */}
+
+                            <motion.div
+                                initial={{ opacity: 0, x: 30 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ duration: 0.3 }}
+                                className=' bg-white rounded-2xl shadow-xl p-6 h-fit sticky top-24 border border-gray-100 flex flex-col'
+                            >
+                                <h2 className=' text-lg sm:text-xl font-bold text-gray-800 mb-4'>
+                                    Order Summary
+                                </h2>
+                                <div className=' space-y-3 text-gray-700 text-sm sm:text-base'>
+                                    <div className='flex justify-between'>
+                                        <span>Subtotal</span>
+                                        <span className=' text-green-700 font-semibold'> {subTotal} Tk</span>
+                                    </div>
+                                    <div className='flex justify-between'>
+                                        <span>Delivery Fee</span>
+                                        <span className=' text-green-700 font-semibold'> {deliveryFee} Tk</span>
+                                    </div>
+                                    <hr className=' my-3' />
+                                    <div className='flex justify-between font-bold text-lg'>
+                                        <span>Final Total</span>
+                                        <span className=' text-green-700 font-semibold'> {finalTotal} Tk</span>
+                                    </div>
+
+                                </div>
+                                <motion.button
+                                 whileTap={{scale:0.92}}
+                                 className=' w-full mt-4 bg-green-600 text-white py-3 rounded-full hover:bg-green-700 transition-all font-semibold text-sm sm:text-base cursor-pointer'
+                                 >
+                                    Proceed to Chackout
+                                </motion.button>
+                            </motion.div>
                         </div>
 
                     )
