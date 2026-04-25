@@ -3,20 +3,44 @@ import { RootState } from '@/redux/store';
 import { ArrowLeft, Building2, Home, MapPin, Navigation, Phone, Search, User } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { MapContainer, TileLayer } from 'react-leaflet';
+import { LatLngExpression, } from 'leaflet';
 
 const Checkout = () => {
     const router = useRouter()
     const { userData } = useSelector((state: RootState) => state.user)
     const [address, setAddress] = useState({
-        fullname: userData?.name,
-        mobile: userData?.mobile,
+        fullname: "",
+        mobile: "",
         city: "",
         state: "",
         pincode: "",
         fulladdress: ""
     })
+    const [position, setPosition] = useState<[number, number] | null>(null)
+
+    useEffect(() => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition((pos) => {
+                const { latitude, longitude } = pos.coords
+                setPosition([latitude, longitude])
+            })
+        }
+    }, [])
+
+    useEffect(() => {
+        if (userData) {
+            setAddress(prev => ({
+                ...prev,
+                fullname: userData.name || "",
+                mobile: userData.mobile || ""
+            }));
+        }
+    }, [userData])
+
+
     return (
         <div className='w-[92%] md:w-[80%] mx-auto py-10 relative'>
             <motion.button
@@ -52,7 +76,7 @@ const Checkout = () => {
                             <input
                                 type="text"
                                 value={address.fullname}
-                                onChange={(e) => setAddress({ ...address, fullname: e.target.value })}
+                                onChange={() => setAddress((prev) => ({ ...prev, fullname: address.fullname || "" }))}
                                 className=' pl-10 w-full border rounded-lg p-3 text-sm bg-gray-50'
                             />
                         </div>
@@ -62,7 +86,7 @@ const Checkout = () => {
                             <input
                                 type="text"
                                 value={address.mobile}
-                                onChange={(e) => setAddress({ ...address, mobile: e.target.value })}
+                                onChange={() => setAddress((prev) => ({ ...prev, fullname: address.mobile || "" }))}
 
                                 className=' pl-10 w-full border rounded-lg p-3 text-sm bg-gray-50'
                             />
@@ -74,7 +98,7 @@ const Checkout = () => {
                                 type="text"
                                 value={address.fulladdress}
                                 placeholder='Full address'
-                                onChange={(e) => setAddress({ ...address, fulladdress: e.target.value })}
+                                onChange={() => setAddress((prev) => ({ ...prev, fullname: address.fulladdress || "" }))}
 
                                 className=' pl-10 w-full border rounded-lg p-3 text-sm bg-gray-50'
                             />
@@ -88,7 +112,7 @@ const Checkout = () => {
                                     type="text"
                                     value={address.city}
                                     placeholder='city'
-                                    onChange={(e) => setAddress({ ...address, city: e.target.value })}
+                                    onChange={() => setAddress((prev) => ({ ...prev, fullname: address.city || "" }))}
 
                                     className=' pl-10 w-full border rounded-lg p-3 text-sm bg-gray-50'
                                 />
@@ -100,7 +124,7 @@ const Checkout = () => {
                                     type="text"
                                     value={address.state}
                                     placeholder='state'
-                                    onChange={(e) => setAddress({ ...address, state: e.target.value })}
+                                    onChange={() => setAddress((prev) => ({ ...prev, fullname: address.state || "" }))}
 
                                     className=' pl-10 w-full border rounded-lg p-3 text-sm bg-gray-50'
                                 />
@@ -112,7 +136,7 @@ const Checkout = () => {
                                     type="text"
                                     value={address.pincode}
                                     placeholder='pincode'
-                                    onChange={(e) => setAddress({ ...address, pincode: e.target.value })}
+                                    onChange={() => setAddress((prev) => ({ ...prev, fullname: address.pincode || "" }))}
 
                                     className=' pl-10 w-full border rounded-lg p-3 text-sm bg-gray-50'
                                 />
@@ -121,11 +145,31 @@ const Checkout = () => {
 
                         <div className=' flex gap-2 mt-3' >
                             <input
-                             type="text" 
-                             placeholder=' search city or area.. '
-                             className=' flex-1 border rounded-lg p-3 text-sm focus:ring-green-500 outline-none'
-                             />
-                            <button className=' flex items-center bg-green-600 text-white px-5 rounded-lg hover:bg-green-700 transition-all font-medium'><Search/>Search</button>
+                                type="text"
+                                placeholder=' search city or area.. '
+                                className=' flex-1 border rounded-lg p-3 text-sm focus:ring-green-500 outline-none'
+                            />
+                            <button className=' flex items-center bg-green-600 text-white px-5 rounded-lg hover:bg-green-700 transition-all font-medium'><Search />Search</button>
+                        </div>
+
+                        {/* map  */}
+
+                        <div className=' relative mt-6 h-82.5 rounded-xl overflow-hidden border border-gray-200 shadow-inner'>
+                            {position &&
+                                <MapContainer
+                                    center={position as LatLngExpression}
+                                    zoom={13}
+                                    scrollWheelZoom={false}
+                                    className=' w-full h-full'
+                                >
+                                    <TileLayer
+                                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                    />
+
+                                </MapContainer>
+                            }
+
                         </div>
 
                     </div>
