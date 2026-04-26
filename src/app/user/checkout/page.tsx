@@ -7,6 +7,8 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { MapContainer, Marker, TileLayer, useMap } from 'react-leaflet';
 import L, { LatLngExpression, } from 'leaflet';
+import { error } from 'console';
+import axios from 'axios';
 
 const markerIcon = new L.Icon({
     iconUrl: "https://cdn-icons-png.flaticon.com/128/684/684908.png",
@@ -20,7 +22,7 @@ const Checkout = () => {
     const [address, setAddress] = useState({
         fullname: "",
         mobile: "",
-        city: "",
+        town: "",
         state: "",
         pincode: "",
         fulladdress: ""
@@ -49,11 +51,11 @@ const Checkout = () => {
         }
     }, [userData])
 
-    const DraggableMarker:React.FC=() => {
-        const map= useMap()
-        useEffect(()=>{
-            map.setView(position as LatLngExpression, 15, {animate:true})
-        },[position, map])
+    const DraggableMarker: React.FC = () => {
+        const map = useMap()
+        useEffect(() => {
+            map.setView(position as LatLngExpression, 15, { animate: true })
+        }, [position, map])
 
         return <Marker
             icon={markerIcon}
@@ -68,6 +70,27 @@ const Checkout = () => {
             }}
         />
     }
+
+    useEffect(() => {
+        const fetchAddress = async () => {
+            if(!position) return
+            try {
+                const result= await axios.get(`https://nominatim.openstreetmap.org/reverse?lat=${position[0]}&lon=${position[1]}&format=json`)
+                console.log(result.data)
+                const locationData= result.data.address
+                setAddress((prev)=>({...prev, 
+                    town:locationData.town,
+                    state:locationData.state,
+                    pincode:locationData.postcode,
+                    fulladdress: result.data.display_name
+
+                }))
+            } catch (error) {
+                console.log(error)
+            }
+        }
+        fetchAddress()
+    }, [position])
 
     return (
         <div className='w-[92%] md:w-[80%] mx-auto py-10 relative'>
@@ -138,9 +161,9 @@ const Checkout = () => {
                                 <Building2 className=' absolute left-3 top-3 text-gray-600' size={18} />
                                 <input
                                     type="text"
-                                    value={address.city}
+                                    value={address.town}
                                     placeholder='city'
-                                    onChange={() => setAddress((prev) => ({ ...prev, city: address.city || "" }))}
+                                    onChange={() => setAddress((prev) => ({ ...prev, city: address.town || "" }))}
 
                                     className=' pl-10 w-full border rounded-lg p-3 text-sm bg-gray-50'
                                 />
