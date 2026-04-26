@@ -5,8 +5,14 @@ import { motion } from 'motion/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { MapContainer, TileLayer } from 'react-leaflet';
-import { LatLngExpression, } from 'leaflet';
+import { MapContainer, Marker, TileLayer, useMap } from 'react-leaflet';
+import L, { LatLngExpression, } from 'leaflet';
+
+const markerIcon = new L.Icon({
+    iconUrl: "https://cdn-icons-png.flaticon.com/128/684/684908.png",
+    iconSize: [40, 40],
+    iconAnchor: [20, 40]
+})
 
 const Checkout = () => {
     const router = useRouter()
@@ -26,6 +32,9 @@ const Checkout = () => {
             navigator.geolocation.getCurrentPosition((pos) => {
                 const { latitude, longitude } = pos.coords
                 setPosition([latitude, longitude])
+            }, (error) => { console.log("location error", error) }, {
+                enableHighAccuracy: true, maximumAge: 0,
+                timeout: 10000
             })
         }
     }, [])
@@ -40,6 +49,25 @@ const Checkout = () => {
         }
     }, [userData])
 
+    const DraggableMarker:React.FC=() => {
+        const map= useMap()
+        useEffect(()=>{
+            map.setView(position as LatLngExpression, 15, {animate:true})
+        },[position, map])
+
+        return <Marker
+            icon={markerIcon}
+            position={position as LatLngExpression}
+            draggable={true}
+            eventHandlers={{
+                dragend: (e: L.LeafletEvent) => {
+                    const marker = e.target as L.Marker
+                    const { lat, lng } = marker.getLatLng()
+                    setPosition([lat, lng])
+                }
+            }}
+        />
+    }
 
     return (
         <div className='w-[92%] md:w-[80%] mx-auto py-10 relative'>
@@ -86,7 +114,7 @@ const Checkout = () => {
                             <input
                                 type="text"
                                 value={address.mobile}
-                                onChange={() => setAddress((prev) => ({ ...prev, fullname: address.mobile || "" }))}
+                                onChange={() => setAddress((prev) => ({ ...prev, mobile: address.mobile || "" }))}
 
                                 className=' pl-10 w-full border rounded-lg p-3 text-sm bg-gray-50'
                             />
@@ -98,7 +126,7 @@ const Checkout = () => {
                                 type="text"
                                 value={address.fulladdress}
                                 placeholder='Full address'
-                                onChange={() => setAddress((prev) => ({ ...prev, fullname: address.fulladdress || "" }))}
+                                onChange={() => setAddress((prev) => ({ ...prev, fulladdress: address.fulladdress || "" }))}
 
                                 className=' pl-10 w-full border rounded-lg p-3 text-sm bg-gray-50'
                             />
@@ -112,7 +140,7 @@ const Checkout = () => {
                                     type="text"
                                     value={address.city}
                                     placeholder='city'
-                                    onChange={() => setAddress((prev) => ({ ...prev, fullname: address.city || "" }))}
+                                    onChange={() => setAddress((prev) => ({ ...prev, city: address.city || "" }))}
 
                                     className=' pl-10 w-full border rounded-lg p-3 text-sm bg-gray-50'
                                 />
@@ -124,7 +152,7 @@ const Checkout = () => {
                                     type="text"
                                     value={address.state}
                                     placeholder='state'
-                                    onChange={() => setAddress((prev) => ({ ...prev, fullname: address.state || "" }))}
+                                    onChange={() => setAddress((prev) => ({ ...prev, state: address.state || "" }))}
 
                                     className=' pl-10 w-full border rounded-lg p-3 text-sm bg-gray-50'
                                 />
@@ -136,7 +164,7 @@ const Checkout = () => {
                                     type="text"
                                     value={address.pincode}
                                     placeholder='pincode'
-                                    onChange={() => setAddress((prev) => ({ ...prev, fullname: address.pincode || "" }))}
+                                    onChange={() => setAddress((prev) => ({ ...prev, pincode: address.pincode || "" }))}
 
                                     className=' pl-10 w-full border rounded-lg p-3 text-sm bg-gray-50'
                                 />
@@ -159,14 +187,14 @@ const Checkout = () => {
                                 <MapContainer
                                     center={position as LatLngExpression}
                                     zoom={13}
-                                    scrollWheelZoom={false}
+                                    scrollWheelZoom={true}
                                     className=' w-full h-full'
                                 >
                                     <TileLayer
                                         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                                         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                                     />
-
+                                    <DraggableMarker />
                                 </MapContainer>
                             }
 
