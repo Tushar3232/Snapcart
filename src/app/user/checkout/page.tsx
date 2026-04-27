@@ -9,6 +9,7 @@ import { MapContainer, Marker, TileLayer, useMap } from 'react-leaflet';
 import L, { LatLngExpression, } from 'leaflet';
 import { error } from 'console';
 import axios from 'axios';
+import { OpenStreetMapProvider } from 'leaflet-geosearch';
 
 const markerIcon = new L.Icon({
     iconUrl: "https://cdn-icons-png.flaticon.com/128/684/684908.png",
@@ -27,6 +28,7 @@ const Checkout = () => {
         pincode: "",
         fulladdress: ""
     })
+    const [searchQuery, setSearchQueary] = useState("")
     const [position, setPosition] = useState<[number, number] | null>(null)
 
     useEffect(() => {
@@ -71,17 +73,27 @@ const Checkout = () => {
         />
     }
 
+    const handleSearchQuery = async () => {
+const provider = new OpenStreetMapProvider()
+const results = await provider.search({ query: searchQuery });
+console.log(results)
+if(results){
+    setPosition([results[0].y, results[0].x])
+}
+    }
+
     useEffect(() => {
         const fetchAddress = async () => {
-            if(!position) return
+            if (!position) return
             try {
-                const result= await axios.get(`https://nominatim.openstreetmap.org/reverse?lat=${position[0]}&lon=${position[1]}&format=json`)
+                const result = await axios.get(`https://nominatim.openstreetmap.org/reverse?lat=${position[0]}&lon=${position[1]}&format=json`)
                 console.log(result.data)
-                const locationData= result.data.address
-                setAddress((prev)=>({...prev, 
-                    town:locationData.town,
-                    state:locationData.state,
-                    pincode:locationData.postcode,
+                const locationData = result.data.address
+                setAddress((prev) => ({
+                    ...prev,
+                    town: locationData.town,
+                    state: locationData.state,
+                    pincode: locationData.postcode,
                     fulladdress: result.data.display_name
 
                 }))
@@ -198,9 +210,15 @@ const Checkout = () => {
                             <input
                                 type="text"
                                 placeholder=' search city or area.. '
+                                value={searchQuery}
+                                onChange={(e) => setSearchQueary(e.target.value)}
                                 className=' flex-1 border rounded-lg p-3 text-sm focus:ring-green-500 outline-none'
                             />
-                            <button className=' flex items-center bg-green-600 text-white px-5 rounded-lg hover:bg-green-700 transition-all font-medium'><Search />Search</button>
+                            <button
+                            onClick={handleSearchQuery}
+                                className=' flex items-center bg-green-600 text-white px-5 rounded-lg hover:bg-green-700 transition-all font-medium'>
+                                <Search />Search
+                            </button>
                         </div>
 
                         {/* map  */}
