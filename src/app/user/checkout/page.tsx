@@ -1,13 +1,12 @@
 "use client"
 import { RootState } from '@/redux/store';
-import { ArrowLeft, Building2, Home, MapPin, Navigation, Phone, Search, User } from 'lucide-react';
+import { ArrowLeft, Building2, Home, LocateFixed, MapPin, Navigation, Phone, Search, User } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { MapContainer, Marker, TileLayer, useMap } from 'react-leaflet';
 import L, { LatLngExpression, } from 'leaflet';
-import { error } from 'console';
 import axios from 'axios';
 import { OpenStreetMapProvider } from 'leaflet-geosearch';
 
@@ -74,12 +73,12 @@ const Checkout = () => {
     }
 
     const handleSearchQuery = async () => {
-const provider = new OpenStreetMapProvider()
-const results = await provider.search({ query: searchQuery });
-console.log(results)
-if(results){
-    setPosition([results[0].y, results[0].x])
-}
+        const provider = new OpenStreetMapProvider()
+        const results = await provider.search({ query: searchQuery });
+        console.log(results)
+        if (results) {
+            setPosition([results[0].y, results[0].x])
+        }
     }
 
     useEffect(() => {
@@ -103,6 +102,18 @@ if(results){
         }
         fetchAddress()
     }, [position])
+
+    const handleCurrentLotaction = () => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition((pos) => {
+                const { latitude, longitude } = pos.coords
+                setPosition([latitude, longitude])
+            }, (error) => { console.log("location error", error) }, {
+                enableHighAccuracy: true, maximumAge: 0,
+                timeout: 10000
+            })
+        }
+    }
 
     return (
         <div className='w-[92%] md:w-[80%] mx-auto py-10 relative'>
@@ -139,7 +150,7 @@ if(results){
                             <input
                                 type="text"
                                 value={address.fullname}
-                                onChange={() => setAddress((prev) => ({ ...prev, fullname: address.fullname || "" }))}
+                                onChange={(e) => setAddress((prev) => ({ ...prev, fullname: e.target.value || "" }))}
                                 className=' pl-10 w-full border rounded-lg p-3 text-sm bg-gray-50'
                             />
                         </div>
@@ -149,7 +160,7 @@ if(results){
                             <input
                                 type="text"
                                 value={address.mobile}
-                                onChange={() => setAddress((prev) => ({ ...prev, mobile: address.mobile || "" }))}
+                                onChange={(e) => setAddress((prev) => ({ ...prev, mobile: e.target.value || "" }))}
 
                                 className=' pl-10 w-full border rounded-lg p-3 text-sm bg-gray-50'
                             />
@@ -161,7 +172,7 @@ if(results){
                                 type="text"
                                 value={address.fulladdress}
                                 placeholder='Full address'
-                                onChange={() => setAddress((prev) => ({ ...prev, fulladdress: address.fulladdress || "" }))}
+                                onChange={(e) => setAddress((prev) => ({ ...prev, fulladdress: e.target.value || "" }))}
 
                                 className=' pl-10 w-full border rounded-lg p-3 text-sm bg-gray-50'
                             />
@@ -175,7 +186,7 @@ if(results){
                                     type="text"
                                     value={address.town}
                                     placeholder='city'
-                                    onChange={() => setAddress((prev) => ({ ...prev, city: address.town || "" }))}
+                                    onChange={(e) => setAddress((prev) => ({ ...prev, city: e.target.value || "" }))}
 
                                     className=' pl-10 w-full border rounded-lg p-3 text-sm bg-gray-50'
                                 />
@@ -187,7 +198,7 @@ if(results){
                                     type="text"
                                     value={address.state}
                                     placeholder='state'
-                                    onChange={() => setAddress((prev) => ({ ...prev, state: address.state || "" }))}
+                                    onChange={(e) => setAddress((prev) => ({ ...prev, state: e.target.value || "" }))}
 
                                     className=' pl-10 w-full border rounded-lg p-3 text-sm bg-gray-50'
                                 />
@@ -199,7 +210,7 @@ if(results){
                                     type="text"
                                     value={address.pincode}
                                     placeholder='pincode'
-                                    onChange={() => setAddress((prev) => ({ ...prev, pincode: address.pincode || "" }))}
+                                    onChange={(e) => setAddress((prev) => ({ ...prev, pincode: e.target.value || "" }))}
 
                                     className=' pl-10 w-full border rounded-lg p-3 text-sm bg-gray-50'
                                 />
@@ -215,7 +226,7 @@ if(results){
                                 className=' flex-1 border rounded-lg p-3 text-sm focus:ring-green-500 outline-none'
                             />
                             <button
-                            onClick={handleSearchQuery}
+                                onClick={handleSearchQuery}
                                 className=' flex items-center bg-green-600 text-white px-5 rounded-lg hover:bg-green-700 transition-all font-medium'>
                                 <Search />Search
                             </button>
@@ -238,6 +249,13 @@ if(results){
                                     <DraggableMarker />
                                 </MapContainer>
                             }
+                            <motion.button
+                                whileTap={{ scale: 0.6 }}
+                                onClick={handleCurrentLotaction}
+                                className=' absolute bottom-4 right-4 bg-green-600 text-white shadow-lg rounded-full p-3 hover:bg-green-700 transition-all flex items-center justify-center z-999'
+                            >
+                                <LocateFixed />
+                            </motion.button>
 
                         </div>
 
