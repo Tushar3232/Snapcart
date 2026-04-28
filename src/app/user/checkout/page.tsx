@@ -19,14 +19,14 @@ const markerIcon = new L.Icon({
 const Checkout = () => {
     const router = useRouter()
     const { userData } = useSelector((state: RootState) => state.user)
-    const { subTotal, deliveryFee, finalTotal } = useSelector((state: RootState) => state.cart)
+    const { subTotal, deliveryFee, finalTotal, cartData } = useSelector((state: RootState) => state.cart)
     const [address, setAddress] = useState({
-        fullname: "",
+        fullName: "",
         mobile: "",
         town: "",
         state: "",
         pincode: "",
-        fulladdress: ""
+        fullAddress: ""
     })
     const [searchQuery, setSearchQueary] = useState("")
     const [position, setPosition] = useState<[number, number] | null>(null)
@@ -48,7 +48,7 @@ const Checkout = () => {
         if (userData) {
             setAddress(prev => ({
                 ...prev,
-                fullname: userData.name || "",
+                fullName: userData.name || "",
                 mobile: userData.mobile || ""
             }));
         }
@@ -92,10 +92,14 @@ const Checkout = () => {
                 const locationData = result.data.address
                 setAddress((prev) => ({
                     ...prev,
-                    town: locationData.town,
-                    state: locationData.state,
-                    pincode: locationData.postcode,
-                    fulladdress: result.data.display_name
+                    town: locationData.city ||
+                        locationData.town ||
+                        locationData.village ||
+                        locationData.county ||
+                        "",
+                    state: locationData.state || "",
+                    pincode: locationData.postcode || "",
+                    fullAddress: result.data.display_name
 
                 }))
             } catch (error) {
@@ -104,6 +108,40 @@ const Checkout = () => {
         }
         fetchAddress()
     }, [position])
+
+    const handleCod = async () => {
+        if (!position) {
+            return null
+        }
+        try {
+            const result = await axios.post("/api/user/order", {
+                userId: userData?._id,
+                items: cartData.map(item => (
+                    {
+                        grocery: item._id,
+                        name: item.name,
+                        price: item.price,
+                        unit: item.unit,
+                        quantity: item.quantity,
+                        image: item.image
+
+                    }
+                )),
+                totalAmount: finalTotal,
+                address: {
+                    ...address,
+                    latitude: position[0],
+                    longitude: position[1]
+
+                },
+                paymentMethod
+            })
+
+            console.log(result.data)
+        } catch (error) {
+            console.log(error)
+        }
+    }
 
     const handleCurrentLotaction = () => {
         if (navigator.geolocation) {
@@ -151,8 +189,8 @@ const Checkout = () => {
                             <User className=' absolute left-3 top-3 text-gray-600' size={18} />
                             <input
                                 type="text"
-                                value={address.fullname}
-                                onChange={(e) => setAddress((prev) => ({ ...prev, fullname: e.target.value || "" }))}
+                                value={address.fullName}
+                                onChange={(e) => setAddress((prev) => ({ ...prev, fullName: e.target.value || "" }))}
                                 className=' pl-10 w-full border rounded-lg p-3 text-sm bg-gray-50'
                             />
                         </div>
@@ -172,9 +210,9 @@ const Checkout = () => {
                             <Home className=' absolute left-3 top-3 text-gray-600' size={18} />
                             <input
                                 type="text"
-                                value={address.fulladdress}
+                                value={address.fullAddress}
                                 placeholder='Full address'
-                                onChange={(e) => setAddress((prev) => ({ ...prev, fulladdress: e.target.value || "" }))}
+                                onChange={(e) => setAddress((prev) => ({ ...prev, fullAddress: e.target.value || "" }))}
 
                                 className=' pl-10 w-full border rounded-lg p-3 text-sm bg-gray-50'
                             />
@@ -188,7 +226,7 @@ const Checkout = () => {
                                     type="text"
                                     value={address.town}
                                     placeholder='city'
-                                    onChange={(e) => setAddress((prev) => ({ ...prev, city: e.target.value || "" }))}
+                                    onChange={(e) => setAddress((prev) => ({ ...prev, town: e.target.value || "" }))}
 
                                     className=' pl-10 w-full border rounded-lg p-3 text-sm bg-gray-50'
                                 />
@@ -305,16 +343,24 @@ const Checkout = () => {
                             <span className=' font-semibold'>Final Total</span>
                             <span className=' font-semibold text-green-600'> {finalTotal} Tk </span>
                         </div>
-                        
+
                     </div>
-                   <motion.button 
-                   whileTap={{scale:0.9}}
-                   className=' w-full mt-6 bg-green-600 text-white py-3 rounded-full hover:bg-green-700 transition-all font-semibold'
-                   >
-                    {
-                        paymentMethod==="cod" ? "palace order" : "Pay & Place Order"
-                    }
-                   </motion.button>
+                    <motion.button
+                        whileTap={{ scale: 0.9 }}
+                        onClick={() => {
+                            if (paymentMethod == "cod") {
+                                handleCod()
+                            } else {
+                                handleOnlineOrDer()
+                            }
+
+                        }}
+                        className=' w-full mt-6 bg-green-600 text-white py-3 rounded-full hover:bg-green-700 transition-all font-semibold'
+                    >
+                        {
+                            paymentMethod === "cod" ? "palace order" : "Pay & Place Order"
+                        }
+                    </motion.button>
                 </motion.div>
 
             </div>

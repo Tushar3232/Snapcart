@@ -14,12 +14,12 @@ interface IOrder {
             quantity: number
         }
     ]
-    totalAmount: string,
+    totalAmount: number,
     paymentMethod: "cod" | "online",
     address: {
         fullName: string,
         mobile: string,
-        tawon: string,
+        town: string,
         state: string,
         pincode: string,
         fullAddress: string
@@ -56,10 +56,11 @@ const orderSchema = new mongoose.Schema<IOrder>({
         enum: ["cod", "online"],
         default: "cod"
     },
+    totalAmount:Number,
     address: {
         fullName: String,
         mobile: String,
-        tawon: String,
+        town: String,
         state: String,
         pincode: String,
         fullAddress: String,
