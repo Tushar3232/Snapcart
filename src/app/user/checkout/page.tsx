@@ -137,7 +137,41 @@ const Checkout = () => {
                 paymentMethod
             })
 
-           router.push("/user/order-success")
+            router.push("/user/order-success")
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    const handleOnlineOrDer = async () => {
+        if (!position) {
+            return null
+        }
+        try {
+            const result = await axios.post("/api/user/payment", {
+                userId: userData?._id,
+                items: cartData.map(item => (
+                    {
+                        grocery: item._id,
+                        name: item.name,
+                        category: item.category,
+                        price: item.price,
+                        unit: item.unit,
+                        quantity: item.quantity,
+                        image: item.image
+
+                    }
+                )),
+                totalAmount: finalTotal,
+                address: {
+                    ...address,
+                    latitude: position[0],
+                    longitude: position[1]
+
+                },
+                paymentMethod
+            })
+            window.location.href = result.data.url
         } catch (error) {
             console.log(error)
         }
