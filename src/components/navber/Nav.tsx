@@ -195,7 +195,7 @@ const Nav = ({ user }: { user: IUser }) => {
                                     </div>
                                 </div>
                                 {
-                                    user.role == "user" && <Link href={""}
+                                    user.role == "user" && <Link href={"/user/my-order"}
                                         onClick={() => setOpen(false)}
                                         className=' flex items-center gap-3 py-3 hover:bg-green-50 rounded-lg text-gray-700 font-medium'
                                     >

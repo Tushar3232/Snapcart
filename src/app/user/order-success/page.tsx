@@ -48,19 +48,19 @@ const OrderSuccess = () => {
                 Thank you for shopping with us! Your order has been placed and is being processed. You can track its progress in your <span className=" font-semibold text-green-700">My Orders</span> section.
             </motion.p>
             <motion.div
-            initial={{opacity:0, scale:0.9}}
-            animate={{opacity:1, scale:1}}
-            transition={{delay:1.2, duration: 0.4}}
-            className="mt-12"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 1.2, duration: 0.4 }}
+                className="mt-12"
             >
-                <Link href={"/user/my-orders"}>
-                <motion.div
-                whileHover={{scale:1.04}}
-                whileTap={{scale:0.92}}
-                className=" flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white text-base font-semibold px-8 py-3 rounded-full shadow-lg transition-all"
-                >
-                    Go to My Orders <ArrowRight/>
-                </motion.div>
+                <Link href={"/user/my-order"}>
+                    <motion.div
+                        whileHover={{ scale: 1.04 }}
+                        whileTap={{ scale: 0.92 }}
+                        className=" flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white text-base font-semibold px-8 py-3 rounded-full shadow-lg transition-all"
+                    >
+                        Go to My Orders <ArrowRight />
+                    </motion.div>
                 </Link>
             </motion.div>
         </div>
