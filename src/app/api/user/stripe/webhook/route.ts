@@ -21,16 +21,39 @@ export async function POST(req: NextRequest) {
         )
     }
 
-    if (event?.type === "checkout.session.completed") {
-        const session = event.data.object
-        await connectDb()
-        await Order.findByIdAndUpdate(session.metadata?.orderId, {
-            isPaid: true
-        })
+    await connectDb()
+    if (event.type === "checkout.session.completed") {
+        const session = event.data.object as Stripe.Checkout.Session;
 
-        return NextResponse.json({ recived: true }, { status: 200 })
+        const orderId = session.metadata?.orderId;
 
+        if (!orderId) {
+            return NextResponse.json(
+                { message: "Missing orderId" },
+                { status: 400 }
+            );
+        }
+
+        const order = await Order.findById(orderId);
+
+        if (!order) {
+            return NextResponse.json(
+                { message: "Order not found" },
+                { status: 404 }
+            );
+        }
+
+        if (!order.isPaid) {
+            await Order.findByIdAndUpdate(orderId, {
+                isPaid: true,
+                status: "confirmed"
+            });
+        }
+
+        return NextResponse.json({ received: true }, { status: 200 });
     }
+
+
 
     return NextResponse.json(
         { received: true },
